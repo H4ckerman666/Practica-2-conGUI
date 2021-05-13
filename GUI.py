@@ -258,6 +258,7 @@ while True:
             window['CHAR20'].update(value = "")
             window['_LONGMEDIA_'].update(value = "")
             window['_ENTROPIA_'].update(value = "")
+            $sadas
 
 
 
