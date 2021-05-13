@@ -105,6 +105,17 @@ layout = [  [sg.Text('Cargar secuencia Sherlock ')],
             [sg.Text('',size=(50,1), key = 'CHAR8')],
             [sg.Text('',size=(50,1), key = 'CHAR9')],
             [sg.Text('',size=(50,1), key = 'CHAR10')],
+            [sg.Text('',size=(50,1), key = 'CHAR11')],
+            [sg.Text('',size=(50,1), key = 'CHAR12')],
+            [sg.Text('',size=(50,1), key = 'CHAR13')],
+            [sg.Text('',size=(50,1), key = 'CHAR14')],
+            [sg.Text('',size=(50,1), key = 'CHAR15')],
+            [sg.Text('',size=(50,1), key = 'CHAR16')],
+            [sg.Text('',size=(50,1), key = 'CHAR17')],
+            [sg.Text('',size=(50,1), key = 'CHAR18')],
+            [sg.Text('',size=(50,1), key = 'CHAR19')],
+            [sg.Text('',size=(50,1), key = 'CHAR20')],
+            
             
              ]
 
@@ -235,6 +246,16 @@ while True:
             window['CHAR8'].update(value = "")
             window['CHAR9'].update(value = "")
             window['CHAR10'].update(value = "")
+            window['CHAR11'].update(value = "")
+            window['CHAR12'].update(value = "")
+            window['CHAR13'].update(value = "")
+            window['CHAR14'].update(value = "")
+            window['CHAR15'].update(value = "")
+            window['CHAR16'].update(value = "")
+            window['CHAR17'].update(value = "")
+            window['CHAR18'].update(value = "")
+            window['CHAR19'].update(value = "")
+            window['CHAR20'].update(value = "")
             window['_LONGMEDIA_'].update(value = "")
             window['_ENTROPIA_'].update(value = "")
 
