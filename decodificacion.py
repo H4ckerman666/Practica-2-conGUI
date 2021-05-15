@@ -16,8 +16,8 @@ def diffNull (num, decod, dic):
 #name = nombre del txt
 #   nombre del txt = Decrypt + name 
 def decodHuff(img, dic,name):
-    #img = cv2.imread("ImagenEncriptada.png",-1)
     a = img[:,:,3]
+    print("asdasdasda",a)
     matrizDecodificada= a.flatten() #Vector unidimencional
     #LLena los primeros pixeles de la componente a
     print(matrizDecodificada)
@@ -39,8 +39,28 @@ def decodHuff(img, dic,name):
     if num != "":
         num = diffNull (num, decod, dic)
     name = "Decrypt" + name + ".txt"
+    #print("jghasdhas",decod)
     file = open(name, "w")
     for tx in decod:
-        file.write(tx + os.linesep)
+        file.write(tx + "\n")
     file.close()
-    return
+    return name
+    
+def comprobacion(txt1,txt2):
+    primertxt = txts(txt1)
+    segundotxt = txts(txt2)
+    if primertxt == segundotxt:
+        print("los txts son iguales")
+    
+
+
+def txts(archivo):
+    linea=archivo.readline()
+    texto = ""
+    while linea != '':
+        # procesar
+        texto = texto + linea
+        linea=archivo.readline()
+        texto = texto.rstrip('\n')
+    string = texto
+    return string

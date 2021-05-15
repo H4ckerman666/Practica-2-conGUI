@@ -11,7 +11,7 @@ def aNumeros(codigo):
 		c.append(255)
 	return c
 
-def codImg(imagen,code):
+def codImg(imagen,code,title):
 	a = imagen[:,:,3]
 	b = imagen[:,:,0]
 	g = imagen[:,:,1]
@@ -30,10 +30,11 @@ def codImg(imagen,code):
 	newComponetA= v.reshape(ancho,alto)
 	#Combina rgb y su la nueva componenete
 	newImage = cv2.merge((b,g,r,newComponetA))
-	cv2.imwrite("ImagenEncriptada.png",newImage)
+	title += ".png" 
+	cv2.imwrite(title,newImage)
 	print("Se ah generado la imagen con el nombre ImagenEncriptada.png")
 	cv2.waitKey(0)
-	return vectorCodificado
+	return title
 
 
  
