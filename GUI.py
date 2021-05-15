@@ -1,88 +1,18 @@
 import PySimpleGUI as sg
+from tkinter import messagebox
+from tkinter import filedialog
 import math
-import sys
+import os
+import pickle
+import cv2
+import pandas as pd
+import csv
+import ntpath
+from Main import Encript
+from Main import Decrypt
+from Main import Decrypt2
 global probabilities
-probabilities = []
 
-
-
-class HuffmanCode:
-    def __init__(self,probability):
-        self.probability = probability
-
-    def position(self, value, index):
-        for j in range(len(self.probability)):
-            if(value >= self.probability[j]):
-                return j
-        return index-1
-    def entropy_of_code(self, prob):
-        probabilidades = prob [:]
-        entropia = 0
-        for i in probabilidades:
-            entropia = entropia + (i)*math.log((1/i),2)
-        return entropia
-
-    def characteristics_huffman_code(self, code,entropy):
-        length_of_code = [len(k) for k in code]
-
-        mean_length = sum([a*b for a, b in zip(length_of_code, self.probability)])
-
-        print("Longitud media del código: %f" % mean_length)
-        LM = ("Longitud media del código: %f" % mean_length)
-        print("Eficiencia del código: %f" % ((entropy/mean_length)*100) + "%" )
-        ENT = ("Eficiencia del código: %f" % ((entropy/mean_length)*100) + "%" )
-        return LM, ENT
-
-    def compute_code(self):
-        num = len(self.probability)
-        huffman_code = ['']*num
-
-        for i in range(num-2):
-            val = self.probability[num-i-1] + self.probability[num-i-2]
-            if(huffman_code[num-i-1] != '' and huffman_code[num-i-2] != ''):
-                huffman_code[-1] = ['1' + symbol for symbol in huffman_code[-1]]
-                huffman_code[-2] = ['0' + symbol for symbol in huffman_code[-2]]
-            elif(huffman_code[num-i-1] != ''):
-                huffman_code[num-i-2] = '0'
-                huffman_code[-1] = ['1' + symbol for symbol in huffman_code[-1]]
-            elif(huffman_code[num-i-2] != ''):
-                huffman_code[num-i-1] = '1'
-                huffman_code[-2] = ['0' + symbol for symbol in huffman_code[-2]]
-            else:
-                huffman_code[num-i-1] = '1'
-                huffman_code[num-i-2] = '0'
-
-            position = self.position(val, i)
-            probability = self.probability[0:(len(self.probability) - 2)]
-            probability.insert(position, val)
-            if(isinstance(huffman_code[num-i-2], list) and isinstance(huffman_code[num-i-1], list)):
-                complete_code = huffman_code[num-i-1] + huffman_code[num-i-2]
-            elif(isinstance(huffman_code[num-i-2], list)):
-                complete_code = huffman_code[num-i-2] + [huffman_code[num-i-1]]
-            elif(isinstance(huffman_code[num-i-1], list)):
-                complete_code = huffman_code[num-i-1] + [huffman_code[num-i-2]]
-            else:
-                complete_code = [huffman_code[num-i-2], huffman_code[num-i-1]]
-
-            huffman_code = huffman_code[0:(len(huffman_code)-2)]
-            huffman_code.insert(position, complete_code)
-
-        huffman_code[0] = ['0' + symbol for symbol in huffman_code[0]]
-        huffman_code[1] = ['1' + symbol for symbol in huffman_code[1]]
-
-        if(len(huffman_code[1]) == 0):
-            huffman_code[1] = '1'
-
-        count = 0
-        final_code = ['']*num
-
-        for i in range(2):
-            for j in range(len(huffman_code[i])):
-                final_code[count] = huffman_code[i][j]
-                count += 1
-
-        final_code = sorted(final_code, key=len)
-        return final_code
 
 #GUI
 #GUI
@@ -92,9 +22,9 @@ sg.theme('DarkAmber')   # Add a touch of color
 layout = [  [sg.Text('Cargar secuencia Sherlock ')],
             [sg.Text('ó')],
             [sg.Text('Inserta su frase a codificar'), sg.InputText("inserte texto")],
-            [sg.Button('Cargar Sherlock'),sg.Button('Cargar Frase'), sg.Button('Limpiar')],
-            [sg.Text('',size=(50,1), key = 'TITLE'), ],
-            [sg.Text('',size=(50,1), key = 'CHAR0'), ],
+            [sg.Button('Encriptar Sherlock'),sg.Button('Desencryptar Sherlock'),sg.Button('Encriptar tus archivos'),sg.Button('Desencriptar tu imagen'), sg.Button('Limpiar')],
+            [sg.Text('',size=(50,1), key = 'TITLE')],
+            [sg.Text('',size=(50,1), key = 'CHAR0')],
             [sg.Text('',size=(50,1), key = 'CHAR1')],
             [sg.Text('',size=(50,1), key = 'CHAR2')],
             [sg.Text('',size=(50,1), key = 'CHAR3')],
@@ -127,109 +57,85 @@ while True:
     event, values = window.read()
     if event == sg.WIN_CLOSED: # if user closes window or clicks cancel
         break
-    if event == "Cargar Frase":
-        inputt = values[0]
-        string = inputt
+    if event == "Encriptar tus archivos":
+        
+        archivo=filedialog.askopenfilename(title="Elije tu imagen")
+        archivo2=filedialog.askopenfilename(title="Elije tu mensaje a codificar")
+        window['TITLE'].update(value = 'Caracter | Código Huffman  ')
+        archivo_name = ntpath.basename(archivo)
+        archivo_name = archivo_name.split(".")
 
-        freq = {}
-        for c in string:
-            if c in freq:
-                freq[c] += 1
-            else:
-                freq[c] = 1
-
-        freq = sorted(freq.items(), key=lambda x: x[1], reverse=True)
-        length = len(string)
-
-        probabilities = [float("{:.2f}".format(frequency[1]/length)) for frequency in freq]
-        probabilities = sorted(probabilities, reverse=True)
-        print(probabilities)
-
-        huffmanClassObject = HuffmanCode(probabilities)
-        P = probabilities
-
-        huffman_code = huffmanClassObject.compute_code()
-
-        entRopia = huffmanClassObject.entropy_of_code(probabilities)
-        print(' Caracter | Código Huffman  ')
-        title = 'Caracter | Código Huffman  '
-        window['TITLE'].update(value = title)
-
-        print('----------------------')
-
-        for id,char in enumerate(freq):
+        img= cv2.imread(archivo,-1)
+        
+        title = archivo_name[0]
+        doc = open(archivo2)
+        Long_media,En_tropia,dicc,listt,im2 = Encript(img,doc,title)
+        keys = list(dicc.keys())
+        valores = list(dicc.values())
+        for id in range(len(dicc)):
             index = "CHAR" + str(id)
-            if huffman_code[id]=='':
-                print(' %-4r |%12s' % (char[0], 1))
-
-                continue
-            print(' %-4r |%12s' % (char[0], huffman_code[id]))
-            printt = (' %-4r |%12s' % (char[0], huffman_code[id]))
+            printt = (' %-4r |%12s' % (keys[id], valores[id]))             
             window[index].update(value = printt)
-
-
-        Long_media, En_tropia =huffmanClassObject.characteristics_huffman_code(huffman_code,entRopia)
+        
+        name_dic = "dic" + title + ".dat"
+        with open(name_dic, "wb") as f:
+            pickle.dump(dicc, f)    
         window['_LONGMEDIA_'].update(value = Long_media)
         window['_ENTROPIA_'].update(value = En_tropia)
+        messagebox.showinfo(title="Listo!!",message="Encriptacion Exitosa, imagen generada")
+
 
 
     #Carga Sherlock     
-    elif event == "Cargar Sherlock" :
-        archivo = open("secuenciaSherlock.txt")
-        linea=archivo.readline()
-        texto = ""
-
-        while linea != '':
-
-            # procesar línea
-            texto = texto + linea
-            linea=archivo.readline()
-            texto = texto.rstrip('\n')
-
-        print(texto)  
-
-        string = texto
-
-        freq = {}
-        for c in string:
-            if c in freq:
-                freq[c] += 1
-            else:
-                freq[c] = 1
-
-        freq = sorted(freq.items(), key=lambda x: x[1], reverse=True)
-        length = len(string)
-
-        probabilities = [float("{:.2f}".format(frequency[1]/length)) for frequency in freq]
-        probabilities = sorted(probabilities, reverse=True)
-        print(probabilities)
-
-        huffmanClassObject = HuffmanCode(probabilities)
-        P = probabilities
-
-        huffman_code = huffmanClassObject.compute_code()
-
-        entRopia = huffmanClassObject.entropy_of_code(probabilities)
-        print(' Caracter | Código Huffman  ')
-        title = 'Caracter | Código Huffman  '
-        window['TITLE'].update(value = title)
-
-        print('----------------------')
-
-        for id,char in enumerate(freq):
+    elif event == "Encriptar Sherlock" :
+        window['TITLE'].update(value = 'Caracter | Código Huffman  ')
+        img= cv2.imread('SherlockToWatson.png',-1)
+        doc = open("secuenciaSherlock.txt")
+        title = "SherlockToWatson2"
+        Long_media,En_tropia,dicc,listt,im2 = Encript(img,doc,title)        
+        keys = list(dicc.keys())
+        valores = list(dicc.values())
+        name_dic = "dic" + title + ".dat"
+        for id in range(len(dicc)):
             index = "CHAR" + str(id)
-            if huffman_code[id]=='':
-                print(' %-4r |%12s' % (char[0], 1))
+            printt = (' %-4r |%12s' % (keys[id], valores[id]))
 
-                continue
-            print(' %-4r |%12s' % (char[0], huffman_code[id]))
-            printt = (' %-4r |%12s' % (char[0], huffman_code[id]))
-            window[index].update(value = printt)
+            window[index].update(value = printt)  
+
+        with open(name_dic, "wb") as f:
+            pickle.dump(dicc, f)    
+        
 
 
-        Long_media, En_tropia =huffmanClassObject.characteristics_huffman_code(huffman_code,entRopia)
+
         window['_LONGMEDIA_'].update(value = Long_media)
         window['_ENTROPIA_'].update(value = En_tropia)
+        messagebox.showinfo(title="Listo!!",message="Encriptacion Exitosa, imagen generada")
+        
+    elif event == "Desencryptar Sherlock" :
+        txt1 = open("secuenciaSherlock.txt")
+        name = "secuenciaSherlock"
+        img2= cv2.imread(im2,-1)
+        Decrypt(img2,dicc,name,txt1)
+        messagebox.showinfo(title="Listo!!",message="Desencriptacion Exitosa, txt generado, SON IDENTICOS")
+        
+    elif event == "Desencriptar tu imagen" :
+        archivo=filedialog.askopenfilename(title="Elije tu imagen a desencriptar")
+        archivo2=filedialog.askopenfilename(title="Elije su diccionario para desencriptar")
+
+        archivo_name = ntpath.basename(archivo)
+        archivo_name = archivo_name.split(".")
+        name = archivo_name[0]
+
+        img2= cv2.imread(archivo,-1) 
+        txt1 = open(archivo2)
+
+        with open(archivo2, "rb") as f:
+            dicc = pickle.load(f)   
+
+
+        Decrypt2(img2,dicc,name)
+        messagebox.showinfo(title="Listo!!",message="Desencriptacion Exitosa")
 
 
         #LIMPIAR TEXT

@@ -1,6 +1,8 @@
 import math
 import sys
+
 global probabilities
+global f
 probabilities = []
 
 class HuffmanCode:
@@ -16,7 +18,15 @@ class HuffmanCode:
         probabilidades = prob [:]
         entropia = 0
         for i in probabilidades:
-            entropia = entropia + (i)*math.log((1/i),2)
+            try:
+                aux= entropia
+                entropia = entropia + (i)*math.log((1/i),2)
+                aux= entropia - aux
+                print("Entropia de " + str(i) + " es :" + str(aux))
+            except ZeroDivisionError:
+                entropia= entropia + 0
+                print(entropia)
+        print("La entropia de la fuente es "  +str(entropia))
         return entropia
 
     def characteristics_huffman_code(self, code,entropy):
@@ -26,6 +36,7 @@ class HuffmanCode:
 
         print("Longitud media del código: %f" % mean_length)
         print("Eficiencia del código: %f" % ((entropy/mean_length)*100) + "%" )
+        return mean_length, (entropy/mean_length)*100
 
     def compute_code(self):
         num = len(self.probability)
@@ -77,53 +88,50 @@ class HuffmanCode:
 
         final_code = sorted(final_code, key=len)
         return final_code
-archivo = open("secuenciaSherlock.txt")
-linea=archivo.readline()
-texto = ""
-i = 1
-while linea != '':
-    # procesar línea
-    texto = texto + linea
+
+
+def Code_Huf(archivo):
     linea=archivo.readline()
-    
-    if i == 1 :
-        # print(texto)
-        i=0
-    texto = texto.rstrip('\n')
+    texto = ""
+    i = 1
+    while linea != '':
+        # procesar
+        texto = texto + linea
+        linea=archivo.readline()
+        texto = texto.rstrip('\n')
+    #print("La fuente es:")
+    #print(texto, type(texto))
+    string = texto
+    freq = {}
+    for c in string:
+        if c in freq:
+            freq[c] += 1
+        else:
+            freq[c] = 1
 
-# print(texto, type(texto))
+    freq = sorted(freq.items(), key=lambda x: x[1], reverse=True)
+    length = len(string)
 
-string = texto
+    probabilities = [float("{:.2f}".format(frequency[1]/length)) for frequency in freq]
+    probabilities = sorted(probabilities, reverse=True)
+    print("Las Probabilidades son: "+ str(probabilities))
 
-freq = {}
-for c in string:
-    if c in freq:
-        freq[c] += 1
-    else:
-        freq[c] = 1
+    huffmanClassObject = HuffmanCode(probabilities)
 
-freq = sorted(freq.items(), key=lambda x: x[1], reverse=True)
-length = len(string)
+    huffman_code = huffmanClassObject.compute_code()
 
-probabilities = [float("{:.2f}".format(frequency[1]/length)) for frequency in freq]
-probabilities = sorted(probabilities, reverse=True)
-print(probabilities)
+    entRopia = huffmanClassObject.entropy_of_code(probabilities)
+    print(' Caracter | cóidigo Huffman  ')
+    print('----------------------')
 
-huffmanClassObject = HuffmanCode(probabilities)
-P = probabilities
+    for id,char in enumerate(freq):
+        if huffman_code[id]=='':
+            print(' %-4r |%12s' % (char[0], 1))
+            continue
+        print(' %-4r |%12s' % (char[0], huffman_code[id]))
 
-huffman_code = huffmanClassObject.compute_code()
+    x, y = huffmanClassObject.characteristics_huffman_code(huffman_code,entRopia)
+    return huffman_code, freq, string, x, y
 
-entRopia = huffmanClassObject.entropy_of_code(probabilities)
-print(' Caracter | cóidigo Huffman  ')
-print('----------------------')
-
-for id,char in enumerate(freq):
-    if huffman_code[id]=='':
-        print(' %-4r |%12s' % (char[0], 1))
-        continue
-    print(' %-4r |%12s' % (char[0], huffman_code[id]))
-
-huffmanClassObject.characteristics_huffman_code(huffman_code,entRopia)
-# el serch sabe 
+# el serch sabe
 #la compu de serch no sabe
