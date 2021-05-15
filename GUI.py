@@ -10,6 +10,7 @@ import csv
 import ntpath
 from Main import Encript
 from Main import Decrypt
+from Main import Decrypt2
 global probabilities
 
 
@@ -67,7 +68,7 @@ while True:
         img= cv2.imread(archivo,-1)
         
         title = archivo_name[0]
-        doc = open("archivo2")
+        doc = open(archivo2)
         Long_media,En_tropia,dicc,listt,im2 = Encript(img,doc,title)
         keys = list(dicc.keys())
         valores = list(dicc.values())
@@ -129,7 +130,7 @@ while True:
         img2= cv2.imread(archivo,-1) 
         txt1 = open(archivo2)
 
-        with open("archivo2", "rb") as f:
+        with open(archivo2, "rb") as f:
             dicc = pickle.load(f)   
 
 
